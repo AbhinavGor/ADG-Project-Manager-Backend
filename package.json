@@ -4,18 +4,24 @@
   "description": "A trello clone for ADG VIT",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index",
+    "start": "node index"
   },
   "author": "Abhinav Gorantla",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.7",
     "nodemon": "^2.0.4",
     "passport": "^0.4.1",
-    "path": "^0.12.7"
+    "passport-google-oauth20": "^2.0.0",
+    "path": "^0.12.7",
+    "validator": "^13.1.17"
   }
 }

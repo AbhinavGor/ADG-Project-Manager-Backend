@@ -1,12 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const passport = require('passport');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const APIRouter = require('./routes/api')
 
 app.use(express.json())
 app.use(cors())
@@ -36,6 +39,7 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use("/api", APIRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is walking on port: ${PORT}.`)

@@ -7,20 +7,20 @@ const validator = require("validator")
 const UserSchema = new mongoose.Schema({
     googleId: {
         type: String,
-        required: true
+        // required: true
     },
     username:{
         type: String,
-        required: true
+        // required: true
     },
     email:{
         type:String,
-        required: true
+        // required: true
     },
     memberType:{
         type: Number,
         default: -1,
-        required: true
+        // required: true
     },
     isAdmin:{
         type: Boolean,
@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
     tokens: [{
         token: {
             type: String,
-            required: true
+            // required: true
         }
     }],
     date:{
