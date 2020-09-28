@@ -6,16 +6,16 @@ const validator = require("validator")
 
 const UserSchema = new mongoose.Schema({
     googleId: {
-        type: String,
-        // required: true
+        type: String
     },
     username:{
-        type: String,
-        // required: true
+        type: String
+    },
+    password:{
+        type: String
     },
     email:{
-        type:String,
-        // required: true
+        type:String
     },
     memberType:{
         type: Number,
@@ -29,8 +29,7 @@ const UserSchema = new mongoose.Schema({
     },
     tokens: [{
         token: {
-            type: String,
-            // required: true
+            type: String
         }
     }],
     date:{
@@ -39,6 +38,43 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
+UserSchema.methods.generateToken = async function () {
+    const findUser = this
+    const token = jwt.sign({ _id:findUser._id.toString(), memberType:findUser.memberType.toString() }, "THEPCONE")
+    
+    findUser.tokens = findUser.tokens.concat({ token })
+    // console.log("TOKEN ADDED:",findUser)
+    await findUser.save()
+    return token
+
+}
+
+UserSchema.pre("save", async function(next) {
+    const user = this
+    // console.log("this prints before saving")
+
+    if (user.isModified("password")) {
+        user.password = await bcrypt.hash(user.password, 8)
+    }
+    
+    next()
+
+})
+
+UserSchema.statics.findByCredentials = async (email, password) => {
+    const findUser = await User.findOne({ email })
+    if(!findUser) {
+        throw new Error ("Unable to Login!")
+    }
+    console.log("USer found: " + findUser);
+    const isMatch = await bcrypt.compare(password, findUser.password)
+
+    if(!isMatch) {
+        throw new Error("Unable to Login!")
+    }
+    return findUser
+
+}
 
 UserSchema.methods.generateToken = async function () {
     const findUser = this

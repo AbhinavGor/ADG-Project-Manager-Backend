@@ -53,4 +53,46 @@ router.get("/adg",
     res.send({foundUser})
   });
 
+    //@route    /api/user/signup
+  //@privacy  public
+  //@method   POST
+  //@res      Register user for THEPC One
+  router.post('/user/signup', async (req, res) => {
+    const { email, password, password2, name } = req.body;
+    
+    try {
+      const foundUser = await User.findOne({email: email});
+      if(foundUser){
+        return res.status(500).send({message: `User with email ${email} already exists.`})
+      }else if(password !== password2){
+        return res.status(500).send({message: "Passwords do not match"});
+      }else{
+        const newUser = new User({email: email, password: password, username:name});
+        await newUser.save();
+        await newUser.generateToken();
+        return res.status(200).send({message: "Sucessfullly registered."});
+
+      }
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(err);
+    }
+  });
+
+  //@route    /api/user/login
+  //@privacy  puhblic
+  //@method   POST
+  //@res      login route using form  
+  router.post('/user/login', async (req, res) => {
+    try {
+        const userFound = await User.findByCredentials(req.body.email, req.body.password);
+        await userFound.generateToken();
+
+        res.status(200).send(userFound);
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);      
+    }
+  });
+
 module.exports = router;
