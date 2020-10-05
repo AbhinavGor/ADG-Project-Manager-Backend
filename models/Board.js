@@ -20,8 +20,44 @@ const BoardSchema = new mongoose.Schema({
             }
     }],
     cards: [{
-        card:{
-            _id: String,
+        _id :{
+            type: String,
+            required: true
+        },
+        cardName: {
+            type: String,
+            required: true
+        },
+        numChecks: {
+            type: Number,
+            required: true
+        },
+        description: {
+            type: String
+        },
+        createdBy: [{
+            name: {
+                type: String,
+                required: true
+            },
+            _id: {
+                type: String,
+                required: true
+            }
+        }],
+        createdOn: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    members: [{
+        name: {
+            type: String,
+            required: true
+        },
+        _id: {
+            type: String,
+            required: true
         }
     }],
     createdOn: {

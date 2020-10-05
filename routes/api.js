@@ -108,9 +108,36 @@ router.get("/adg",
     }
 
     const newBoard = new Board({ boardName, createdBy });
+    await newBoard.save();
     console.log(user);
-    res.status(200).send({newBoard, createdBy});
+    res.status(200).send({newBoard});
 
+  })
+
+  //@route    /api/card/create
+  //@privacy  private
+  //@method   POST
+  router.post('/card/create/:boardID', auth, async (req, res) => {
+    const { cardName, numChecks, desc } = req.body;
+    const boardID = req.body.params;
+    try {
+      const foundBoard = await Board.findById(boardID);
+      if(!foundBoard){
+        res.status(500).send({"error": `Board with board ID ${boardID} not found!`});
+      }
+      const user = req.user;
+      const createdBy = {
+        name: user.username,
+        _id: user._id
+      }  
+
+      const createdCard = {
+        cardName, 
+      }
+    } catch (error) {
+      
+    }
+    
   })
 
 
