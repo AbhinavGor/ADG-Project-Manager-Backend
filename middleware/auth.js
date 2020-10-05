@@ -26,7 +26,7 @@ const auth = async function (req,res,next) {
       const token = req.headers.authorization.split(' ')[1]
       // const token = req.cookies['auth_token']
       console.log(token);
-      const decoded = jwt.verify(token, "THEPCONE")
+      const decoded = jwt.verify(token, "ADGPROJMAN")
       const user = await User.findOne( { _id: decoded._id,memberType:decoded.memberType, "tokens.token":token })
       if(!user) {
           throw new Error()
@@ -44,7 +44,7 @@ const auth = async function (req,res,next) {
 const adminAuth = function (req,res,next){
   try{
       const token = req.header("Authorization").replace("Bearer ","")
-      const decoded = jwt.verify(token ,'THEPCONE')
+      const decoded = jwt.verify(token ,'ADGPROJMAN')
       // console.log("from Admin Auth: isAdmin: ",decoded.isAdmin)
       if(decoded.memberType ==="-1" | decoded.memberType ==="0"){
           throw new Error()
@@ -62,7 +62,7 @@ const adminAuth = function (req,res,next){
 const memberAuth = function (req,res,next){
   try{
       const token = req.header("Authorization").replace("Bearer ","")
-      const decoded = jwt.verify(token ,'THEPCONE')
+      const decoded = jwt.verify(token ,'ADGPROJMAN')
       // console.log("from Admin Auth: isAdmin: ",decoded.isAdmin)
       if(decoded.memberType ==="-1"){
           throw new Error()

@@ -5,6 +5,7 @@ const GoogleStrategy = require('passport-google-oauth20')
 const { auth, memberAuth, adminAuth } = require("../middleware/auth")
 
 const User = require('../models/User')
+const Board = require('../models/Board')
 
 passport.use(new GoogleStrategy({
     clientID: "861672875050-13djnn0pkqsovr4c4daijvu8vmntolg8.apps.googleusercontent.com",
@@ -53,7 +54,7 @@ router.get("/adg",
     res.send({foundUser})
   });
 
-    //@route    /api/user/signup
+  //@route    /api/user/signup
   //@privacy  public
   //@method   POST
   //@res      Register user for THEPC One
@@ -94,5 +95,23 @@ router.get("/adg",
       res.status(400).send(err);      
     }
   });
+
+  //@route    /api/board/create
+  //@privacy  private
+  //@method   POST
+  router.post('/board/create', auth, async (req, res)=>{
+    const { boardName } = req.body;
+    const user = req.user;
+    const createdBy = {
+      name: user.username,
+      _id: user._id
+    }
+
+    const newBoard = new Board({ boardName, createdBy });
+    console.log(user);
+    res.status(200).send({newBoard, createdBy});
+
+  })
+
 
 module.exports = router;

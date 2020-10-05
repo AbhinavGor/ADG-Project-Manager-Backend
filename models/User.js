@@ -38,17 +38,6 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-UserSchema.methods.generateToken = async function () {
-    const findUser = this
-    const token = jwt.sign({ _id:findUser._id.toString(), memberType:findUser.memberType.toString() }, "THEPCONE")
-    
-    findUser.tokens = findUser.tokens.concat({ token })
-    // console.log("TOKEN ADDED:",findUser)
-    await findUser.save()
-    return token
-
-}
-
 UserSchema.pre("save", async function(next) {
     const user = this
     // console.log("this prints before saving")
