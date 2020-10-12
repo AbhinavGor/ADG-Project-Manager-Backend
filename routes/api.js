@@ -6,6 +6,7 @@ const { auth, memberAuth, adminAuth } = require("../middleware/auth")
 
 const User = require('../models/User')
 const Board = require('../models/Board')
+const Card = require('../models/Card')
 
 passport.use(new GoogleStrategy({
     clientID: "861672875050-13djnn0pkqsovr4c4daijvu8vmntolg8.apps.googleusercontent.com",
@@ -109,17 +110,59 @@ router.get("/adg",
 
     const newBoard = new Board({ boardName, createdBy });
     await newBoard.save();
-    console.log(user);
+
+    newBoard.members.push(createdBy);
+    await newBoard.save();
+
     res.status(200).send({newBoard});
 
   })
 
+  //@route    /api/board/:boardID/addMember
+  //@privacy  private
+  //@method   POST
+  router.post('/board/:boardID/addMember', auth, async (req, res) => {
+    try {
+      const foundBoard = await Board.findById(req.params.boardID);
+
+      if(!foundBoard)
+        res.send({'error': `{$req.params.boardID} is an invalid board ID.`});
+      
+      var isAuth = false;
+      for (let index = 0; index < foundBoard.members.length; index++) {
+        if(foundBoard.members[index]._id === req.user._id){
+          var isAuth = true;
+        }        
+      }
+      if(!isAuth){
+        const addUser = {
+          name: req.user.username,
+          _id: req.user._id
+        }
+        foundBoard.members.push(addUser);
+        foundBoard.save();
+
+        return res.send(foundBoard);
+      }else{
+        return res.send({error: 'User {req.user.username} with ID {$req.user._id} already exists in the board.'}).status(500);
+      }
+
+    } catch (error) {
+      console.log(error)
+      res.send({error}).status(500)
+    }
+  })
+
+  //@route    /api/allBoards
+  //@privacy  private
+  //@method   GET
+
   //@route    /api/card/create
   //@privacy  private
   //@method   POST
-  router.post('/card/create/:boardID', auth, async (req, res) => {
-    const { cardName, numChecks, desc } = req.body;
-    const boardID = req.body.params;
+  router.post('/card/:boardID/create', auth, async (req, res) => {
+    const { cardName, numChecks, cardDescription, checkDescription } = req.body;
+    const boardID = req.params.boardID;
     try {
       const foundBoard = await Board.findById(boardID);
       if(!foundBoard){
@@ -131,11 +174,20 @@ router.get("/adg",
         _id: user._id
       }  
 
-      const createdCard = {
-        cardName, 
-      }
+      const createdCard = new Card ({
+        cardName, createdBy, cardDescription, checkDescription, numChecks
+      })
+
+      await createdCard.save();
+
+      // foundBoard.cards.concat(createdCard);
+      foundBoard.cards.push(createdCard);
+      await foundBoard.save();
+
+      res.send({foundBoard, createdCard, createdBy}).status(200)
     } catch (error) {
-      
+        console.log(error)
+        res.send({error}).status(500)
     }
     
   })
