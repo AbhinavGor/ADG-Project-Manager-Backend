@@ -97,6 +97,30 @@ router.get("/adg",
     }
   });
 
+  //@route    /api/user/login
+  //@privacy  puhblic
+  //@method   POST
+  //@res      login route using form  
+  router.post('/user/google', async (req, res) => {
+    try {
+        const userRec = req.body.profileObj;
+        const userFound = await User.findByCredentials(userRec.email);
+        if(userFound){
+          await userFound.generateToken();
+          res.status(200).send(userFound);
+        }else{
+          const newUser = new User({email: userRec.email, username: userRec.name});
+          await newUser.save();
+          await newUser.generateToken();
+          return res.status(200).send({message: "Sucessfullly registered."});
+        }
+        
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);      
+    }
+  });
+
   //@route    /api/board/create
   //@privacy  private
   //@method   POST
