@@ -180,6 +180,11 @@ router.get("/adg",
   //@route    /api/allBoards
   //@privacy  private
   //@method   GET
+  router.post('/board/allBoards', auth, async (req, res) => {
+    const allBoards = await Board.find();
+
+    res.send({allBoards}).status(200)
+  })
 
   //@route    /api/card/create
   //@privacy  private
