@@ -5,6 +5,63 @@ const BoardSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    lists: [{
+        _id: {
+            type: String
+        },
+       listName: {
+            type: String
+        },
+        listDesc: {
+            type: String
+        },
+        createdBy: [{
+            name: {
+                type: String,
+                required: true
+            },
+            _id: {
+                type: String,
+                required: true
+            }
+        }],
+        cards: [{
+            cardName: {
+                type: String,
+            },
+            cardDesc: {
+                type: String
+            },
+            createdBy: [{
+                name: {
+                    type: String,
+                    required: true
+                },
+                _id: {
+                    type: String,
+                    required: true
+                }
+            }],
+            createdOn: {
+                type: Date,
+                default: Date.now()
+            },
+            Description: {
+                type: String
+            },
+            Deadline: {
+                type: Date
+            },
+            taskStatus: {
+                type: Number,
+                default: -1
+            }
+        }],
+        createdOn: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdBy: [{
             name: {
                 type: String,
@@ -15,7 +72,6 @@ const BoardSchema = new mongoose.Schema({
                 required: true
             }
     }],
-    cards: [],
     members: [],
     createdOn: {
         type: Date,

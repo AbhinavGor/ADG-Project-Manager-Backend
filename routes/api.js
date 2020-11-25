@@ -180,17 +180,17 @@ router.get("/adg",
   //@route    /api/allBoards
   //@privacy  private
   //@method   GET
-  router.post('/board/allBoards', auth, async (req, res) => {
+  router.get('/board/allBoards', auth, async (req, res) => {
     const allBoards = await Board.find();
 
     res.send({allBoards}).status(200)
   })
 
-  //@route    /api/card/create
+  //@route    /api/list/create
   //@privacy  private
   //@method   POST
-  router.post('/card/:boardID/create', auth, async (req, res) => {
-    const { cardName, numChecks, cardDescription, checkDescription } = req.body;
+  router.post('/list/:boardID/create', auth, async (req, res) => {
+    const { listName, listDesc } = req.body;
     const boardID = req.params.boardID;
     try {
       const foundBoard = await Board.findById(boardID);
@@ -203,14 +203,48 @@ router.get("/adg",
         _id: user._id
       }  
 
-      const createdCard = new Card ({
-        cardName, createdBy, cardDescription, checkDescription, numChecks
-      })
+      const createdList = {
+        listName, listDesc, createdBy
+      }
 
-      await createdCard.save();
+      foundBoard.lists.push(createdList);
 
-      // foundBoard.cards.concat(createdCard);
-      foundBoard.cards.push(createdCard);
+      await foundBoard.save();
+
+      res.send({foundBoard, createdList, createdBy}).status(200)
+    } catch (error) {
+        console.log(error)
+        res.send({error}).status(500)
+    }
+    
+  })
+
+  router.post('/card/:boardID/:listID/create', auth, async (req, res) => {
+    const { cardName, cardDesc } = req.body;
+    const boardID = req.params.boardID;
+    const listID = req.params.listID;
+    try {
+      const foundBoard = await Board.findById(boardID);
+      const foundList = await foundBoard.lists.findById(listID);
+      if(!foundBoard){
+        res.status(500).send({"error": `Board with board ID ${boardID} not found!`});
+      }
+
+      if(!foundList){
+        res.status(500).send({"error": `List in board with board ID ${boardID} and with list ID ${listID} not found!`});
+      }
+      const user = req.user;
+      const createdBy = {
+        name: user.username,
+        _id: user._id
+      }  
+
+      const createdCard = {
+        cardName, cardDesc, createdBy
+      }
+
+      foundList.lists.push(createdCard);
+
       await foundBoard.save();
 
       res.send({foundBoard, createdCard, createdBy}).status(200)
@@ -218,7 +252,6 @@ router.get("/adg",
         console.log(error)
         res.send({error}).status(500)
     }
-    
   })
 
   
