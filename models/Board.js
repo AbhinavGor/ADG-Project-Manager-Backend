@@ -5,6 +5,9 @@ const BoardSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    boardDesc: {
+        type: String
+    },
     lists: [{
         _id: {
             type: String

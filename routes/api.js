@@ -7,6 +7,7 @@ const { auth, memberAuth, adminAuth } = require("../middleware/auth")
 const User = require('../models/User')
 const Board = require('../models/Board')
 const Card = require('../models/Card')
+const List = require('../models/List')
 
 passport.use(new GoogleStrategy({
     clientID: "861672875050-13djnn0pkqsovr4c4daijvu8vmntolg8.apps.googleusercontent.com",
@@ -125,14 +126,14 @@ router.get("/adg",
   //@privacy  private
   //@method   POST
   router.post('/board/create', auth, async (req, res)=>{
-    const { boardName } = req.body;
+    const { boardName, boardDesc } = req.body;
     const user = req.user;
     const createdBy = {
       name: user.username,
       _id: user._id
     }
 
-    const newBoard = new Board({ boardName, createdBy });
+    const newBoard = new Board({ boardName, boardDesc, createdBy });
     await newBoard.save();
 
     newBoard.members.push(createdBy);
@@ -186,6 +187,12 @@ router.get("/adg",
     res.send({allBoards}).status(200)
   })
 
+  router.get('/users/allUsers', async (req, res) => {
+    const allUsers = await User.find();
+
+    res.send({allUsers}).status(200)
+  })
+
   //@route    /api/list/create
   //@privacy  private
   //@method   POST
@@ -203,9 +210,9 @@ router.get("/adg",
         _id: user._id
       }  
 
-      const createdList = {
+      const createdList = new List({
         listName, listDesc, createdBy
-      }
+      });
 
       foundBoard.lists.push(createdList);
 
@@ -239,9 +246,9 @@ router.get("/adg",
         _id: user._id
       }  
 
-      const createdCard = {
+      const createdCard = new Card({
         cardName, cardDesc, createdBy
-      }
+      });
 
       foundList.lists.push(createdCard);
 
