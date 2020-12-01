@@ -98,6 +98,17 @@ router.get("/adg",
     }
   });
 
+  router.get('/user/:id', auth, async (req, res) => {
+    const foundUser = await User.findOne( {_id: req.params.id})
+
+
+    if(!foundUser) {
+      res.status(404).send({"message" : "User not found!"})
+    }
+
+    res.status(200).send(foundUser);
+  })
+
   //@route    /api/user/login
   //@privacy  puhblic
   //@method   POST
