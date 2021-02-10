@@ -70,7 +70,6 @@ UserSchema.methods.generateToken = async function () {
     const token = jwt.sign({ _id:findUser._id.toString(), memberType:findUser.memberType.toString() }, "ADGPROJMAN")
     
     findUser.tokens = findUser.tokens.concat({ token })
-    // console.log("TOKEN ADDED:",findUser)
     await findUser.save()
     return token
 

@@ -156,8 +156,8 @@ router.get("/adg",
 
   //@route    /api/board/:boardID/addMember
   //@privacy  private
-  //@method   POST
-  router.post('/board/:boardID/addMember', auth, async (req, res) => {
+  //@method   GET
+  router.get('/board/:boardID/addMember', auth, async (req, res) => {
     try {
       const foundBoard = await Board.findById(req.params.boardID);
 
@@ -243,7 +243,11 @@ router.get("/adg",
     const listID = req.params.listID;
     try {
       const foundBoard = await Board.findById(boardID);
-      const foundList = await foundBoard.lists.findById(listID);
+      for (let index = 0; index < foundBoard.lists.length; index++) {
+        if (listID === foundBoard.lists[index]._id) {
+            var foundList = foundBoard.lists[index]
+        }
+      }
       if(!foundBoard){
         res.status(500).send({"error": `Board with board ID ${boardID} not found!`});
       }
@@ -261,7 +265,7 @@ router.get("/adg",
         cardName, cardDesc, createdBy
       });
 
-      foundList.lists.push(createdCard);
+      foundList.cards.push(createdCard);
 
       await foundBoard.save();
 
